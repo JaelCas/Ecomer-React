@@ -23,7 +23,8 @@ export const registrarusuario = async (req, res) => {
             apellido,
             email,
             password:hashedPassword,
-            telefono
+            telefono,
+            rol: "user"
         });
         await newusuario.save();
         res.status(201).json({message: "Usuario creado exitosamente"});

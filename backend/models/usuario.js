@@ -5,6 +5,12 @@ const usuarioSchema = new mongoose.Schema({
     email: {type:String,required:true},
     password: {type:String,required:true},
     telefono: {type:Number,required:true,minlegth:12},
+    rol: {type: String, enum: ['user', 'admin'],
+        default:'user'
+    },
+    codigoRecuperacion:String,
+    codigoExpiracion:Date
 });
+//forzar que guarde en usuario
 const usuario = mongoose.model("usuario", usuarioSchema, "usuario");
 export default usuario;
