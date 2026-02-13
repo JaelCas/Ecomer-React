@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import Usuario from "../models/usuario.js";
 
 //Verificar el token y consulta el usuario actualizado en BD
-export const verificarToken = async (requestAnimationFrame, resizeBy, next) => {
+export const verificarToken = async (req, res, next) => {
     try {
         const authHeader = req.headers["authorization"];
 
@@ -39,7 +39,7 @@ export const verificarToken = async (requestAnimationFrame, resizeBy, next) => {
 
 //Solo administradores 
 export const soloAdmin = (req, res, next) =>{
-    if (req.usuario?.rol !== "admind") {
+    if (req.usuario?.rol !== "admin") {
         return res.status(403).json({ message: "Acceso denegado: se requiere rol admin" });
     }
     next();
