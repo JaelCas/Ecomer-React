@@ -19,47 +19,21 @@ export default function Login (){
         setLoading(true);
         setMessage({type: '', text: ''});
         try {
-            const response = await axios.post('http://localhost:8081/api/login',{
-                email: email,
-                password: password
-            });
+            // USAR login() del contexto que redirige según el rol
+            await login(email, password);
 
-            // axios ya parsea el json automaticamente
-            const data = response.data;
             setMessage({
                 type: 'success',
-                text: `¡Bienvenido ${data.usuario.nombre}!`
+                text: '¡Inicio de sesión correcto!'
             });
-            console.log("usuario:", data.usuario);
-            // navegar despues de 1 segundo
-            setTimeout(() => {
-                navigate('/Home')
-            },1000);
         } catch (error) {
-            console.error('Error:', error)
-
-            //manejo de errores con axios
-            if (error.response){
-                //el servidor respondio con un codigo de error
-                if(error.response.status === 404){
-                    setMessage({type: 'error', text: 'Usuario no encontrado'});
-                } else if (error.response.status === 401){
-                    setMessage({type: 'error', text: 'Contraseña incorrecta'});
-                } else {
-                    setMessage({type: 'error', text: error.response.data.message || 'Error al iniciar sesion'                  
-                    });
-                }
-            } else if (error.request){
-                //la peticion se hizo pero no hubo respuesta
-                setMessage({type: 'error', text: 'No se pudo conectar con el servidor'
-                });
-            } else {
-                //error al configurar la peticion
-                setMessage({type: 'error', text: 'Error al procesar la solicitud'
-                });
-            }
-        } finally {
-            setLoading(false);
+            console.error('Error:', error);
+            setMessage({
+                type: 'error',
+                text: error.message || 'Error al iniciar sesión'
+            });
+        }finally{
+            setLoading(false)
         }
     }
     return (
