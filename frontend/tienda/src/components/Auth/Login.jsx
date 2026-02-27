@@ -12,7 +12,7 @@ export default function Login (){
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({type: '', text: ''});
     const navigate = useNavigate();
-    const { Login } = useAuth();
+    const { login } = useAuth();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -111,7 +111,7 @@ export default function Login (){
                                 
                                 <span className="ml-2 text-sm text-gray-700">Recordarme</span>
                             </label>
-                            <button type="button" className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors">
+                            <button type="button" onClick={() => navigate('/forgot-password')} className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors">
                                 ¿Olvidaste tu contraseña?
                             </button>
                         </div>

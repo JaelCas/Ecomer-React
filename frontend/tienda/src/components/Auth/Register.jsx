@@ -109,6 +109,15 @@ export default function Register() {
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg"
                     />
                     </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input
+                        name="apellido"
+                        value={formData.apellido}
+                        onChange={handleChange}
+                        placeholder="Apellido"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    />
+                    </div>
     
                     {/* Email */}
                     <input
