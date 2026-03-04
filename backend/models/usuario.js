@@ -1,16 +1,21 @@
 import mongoose from "mongoose"; 
+
 const usuarioSchema = new mongoose.Schema({
-    nombre: {type:String,required:true},
-    apellido: {type:String,required:true},
-    email: {type:String,required:true},
-    password: {type:String,required:true},
-    telefono: {type:Number,required:true,minlegth:12},
-    rol: {type: String, enum: ['user', 'admin'],
-        default:'user'
+    nombre: { type: String, required: true },
+    apellido: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    telefono: { type: Number, required: true, minlength: 12 }, // ✅ FIX: "minlegth" → "minlength"
+    rol: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user',
+        set: (v) => typeof v === 'string' ? v.trim() : v  // ✅ FIX: limpia el \n automáticamente
     },
-    codigoRecuperacion:String,
-    codigoExpiracion:Date
+    codigoRecuperacion: String,
+    codigoExpiracion: Date
 });
-//forzar que guarde en usuario
+
+// Forzar que guarde en colección "usuario"
 const usuario = mongoose.model("usuario", usuarioSchema, "usuario");
 export default usuario;

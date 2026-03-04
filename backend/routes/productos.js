@@ -5,10 +5,10 @@ import { crearproductos, obtenerproductos, actualizarProducto, eliminarProducto}
 const router = express.Router();
 
 //👤 Ver productos (user y admin)
-router.get("/", verificarToken, obtenerproductos);
+router.get("/", obtenerproductos);
 
 //👑 Crear
-router.get("/", verificarToken, soloAdmin, crearproductos);
+router.post("/", verificarToken, soloAdmin, crearproductos);
 
 //👑 Actualizar
 router.put("/:id", verificarToken, soloAdmin, actualizarProducto);

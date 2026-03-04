@@ -1,7 +1,7 @@
 
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; //importat axios 
+import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -16,22 +16,19 @@ export const AuthProvider = ({ children }) => {
                 password: password
             });
 
-            const data = response.data; //axios ya parsea el JSON automaticamente 
+            const data = response.data;
 
-            //Guardamos el usuario y token en memoria 
             setUsuario({
                 ...data.usuario,
                 token: data.token,
             });
 
-            //Redirigimos segun el rol
             if (data.usuario.rol === "admin"){
                 navigate("/admin");
             } else {
                 navigate("/productos");
             }
         } catch (error) {
-            //Manejo de errores con axios 
             if (error.response){
                 throw new Error(error.response.data.message || 'Error al iniciar sesión');
             } else if (error.request){
@@ -41,16 +38,19 @@ export const AuthProvider = ({ children }) => {
             }
         }
     };
+
     const logout = () => {
         setUsuario(null);
         navigate("/login");
     };
+
     return (
-        <AuthContext.Provider value={{ usuario, login, logout }}>
+        <AuthContext.Provider value={{ usuario, setUsuario, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
 };
+
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

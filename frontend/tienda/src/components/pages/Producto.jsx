@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../Layout/Navbar';
 import Footer from '../Layout/Footer';
+import { useCart } from '../../context/CartContext';
 
 const API_URL = "http://localhost:8081/api/productos";
 
@@ -12,6 +13,7 @@ export default function Productos() {
   const [rango, setRango] = useState("cualquiera");
   const [paginaActual, setPaginaActual] = useState(1);
   const productosPorPagina = 8;
+  const { agregarAlCarrito } = useCart();
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -37,7 +39,6 @@ export default function Productos() {
     }).format(price);
   };
 
-  // Filtros
   const productosFiltrados = productos
     .filter((p) => p.Nombre?.toLowerCase().includes(busqueda.toLowerCase()))
     .filter((p) => {
@@ -53,28 +54,27 @@ export default function Productos() {
       return 0;
     });
 
-  // Paginación
   const totalPaginas = Math.ceil(productosFiltrados.length / productosPorPagina);
   const inicio = (paginaActual - 1) * productosPorPagina;
   const productosPagina = productosFiltrados.slice(inicio, inicio + productosPorPagina);
 
-  const handleAddToCart = (product) => {
-    alert(`${product.Nombre} agregado al carrito`);
+  const handleAddToCart = (prod) => {
+    agregarAlCarrito({
+      id: prod._id,
+      nombre: prod.Nombre,
+      precio: prod.Precio,
+      image: prod.Image,
+    });
   };
 
   return (
     <>
       <Navbar />
-
       <div className="min-h-screen bg-gray-50">
-        {/* Buscador y filtros */}
         <div className="bg-white border-b border-gray-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-6 py-4">
-            <div className="flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-2.5 
-                            bg-white focus-within:border-purple-400 focus-within:ring-2 
-                            focus-within:ring-purple-100 transition">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="#9ca3af" strokeWidth="2">
+            <div className="flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-2.5 bg-white focus-within:border-purple-400 focus-within:ring-2 focus-within:ring-purple-100 transition">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <path d="M21 21l-4.35-4.35" />
               </svg>
@@ -87,8 +87,6 @@ export default function Productos() {
               />
             </div>
           </div>
-
-          {/* Filtros */}
           <div className="max-w-7xl mx-auto px-6 pb-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -99,11 +97,7 @@ export default function Productos() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">Rango de Precio</label>
-                <select
-                  value={rango}
-                  onChange={(e) => { setRango(e.target.value); setPaginaActual(1); }}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-purple-400 bg-white"
-                >
+                <select value={rango} onChange={(e) => { setRango(e.target.value); setPaginaActual(1); }} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-purple-400 bg-white">
                   <option value="cualquiera">Cualquier Precio</option>
                   <option value="menos500">Menos de $500.000</option>
                   <option value="500a1000">$500.000 - $1.000.000</option>
@@ -112,11 +106,7 @@ export default function Productos() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">Ordenar Por</label>
-                <select
-                  value={ordenar}
-                  onChange={(e) => { setOrdenar(e.target.value); setPaginaActual(1); }}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-purple-400 bg-white"
-                >
+                <select value={ordenar} onChange={(e) => { setOrdenar(e.target.value); setPaginaActual(1); }} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-purple-400 bg-white">
                   <option value="relevancia">Relevancia</option>
                   <option value="precio_asc">Precio: Menor a Mayor</option>
                   <option value="precio_desc">Precio: Mayor a Menor</option>
@@ -127,7 +117,6 @@ export default function Productos() {
           </div>
         </div>
 
-        {/* Grid de productos */}
         <div className="max-w-7xl mx-auto px-6 py-8">
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -150,17 +139,10 @@ export default function Productos() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {productosPagina.map((prod) => (
-                <div key={prod._id}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg 
-                             transition-all duration-200 flex flex-col group">
+                <div key={prod._id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 flex flex-col group">
                   <div className="h-52 bg-gray-100 overflow-hidden">
                     {prod.Image ? (
-                      <img
-                        src={prod.Image}
-                        alt={prod.Nombre}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => { e.currentTarget.style.display = "none"; }}
-                      />
+                      <img src={prod.Image} alt={prod.Nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { e.currentTarget.style.display = "none"; }} />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-5xl">📦</div>
                     )}
@@ -169,14 +151,10 @@ export default function Productos() {
                     <h3 className="font-bold text-gray-800 mb-1 line-clamp-1">{prod.Nombre}</h3>
                     <p className="text-gray-400 text-xs mb-3 line-clamp-2 flex-1">{prod.Descripcion}</p>
                     <div className="flex items-center justify-between mt-auto">
-                      <span className="text-blue-600 font-bold text-lg">
-                        {formatPrice(prod.Precio)}
-                      </span>
+                      <span className="text-blue-600 font-bold text-lg">{formatPrice(prod.Precio)}</span>
                       <button
                         onClick={() => handleAddToCart(prod)}
-                        className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 
-                                   hover:to-purple-700 text-white px-4 py-1.5 rounded-xl text-xs 
-                                   font-semibold transition-all duration-200 transform hover:scale-105"
+                        className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 transform hover:scale-105"
                       >
                         Comprar
                       </button>
@@ -187,44 +165,17 @@ export default function Productos() {
             </div>
           )}
 
-          {/* Paginación */}
           {totalPaginas > 1 && (
             <div className="flex justify-center items-center gap-2 mt-10">
-              <button
-                onClick={() => setPaginaActual((p) => Math.max(1, p - 1))}
-                disabled={paginaActual === 1}
-                className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium 
-                           text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
-              >
-                Anterior
-              </button>
-
+              <button onClick={() => setPaginaActual((p) => Math.max(1, p - 1))} disabled={paginaActual === 1} className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">Anterior</button>
               {[...Array(totalPaginas)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setPaginaActual(i + 1)}
-                  className={`w-10 h-10 rounded-xl text-sm font-semibold transition
-                    ${paginaActual === i + 1
-                      ? "bg-blue-600 text-white shadow"
-                      : "border border-gray-200 text-gray-600 hover:bg-gray-50"}`}
-                >
-                  {i + 1}
-                </button>
+                <button key={i} onClick={() => setPaginaActual(i + 1)} className={`w-10 h-10 rounded-xl text-sm font-semibold transition ${paginaActual === i + 1 ? "bg-blue-600 text-white shadow" : "border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>{i + 1}</button>
               ))}
-
-              <button
-                onClick={() => setPaginaActual((p) => Math.min(totalPaginas, p + 1))}
-                disabled={paginaActual === totalPaginas}
-                className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium 
-                           text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
-              >
-                Siguiente
-              </button>
+              <button onClick={() => setPaginaActual((p) => Math.min(totalPaginas, p + 1))} disabled={paginaActual === totalPaginas} className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">Siguiente</button>
             </div>
           )}
         </div>
       </div>
-
       <Footer />
     </>
   );

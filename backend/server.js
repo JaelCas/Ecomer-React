@@ -13,14 +13,20 @@ import adminRoutes from './routes/Admin.js';
 const app = express();
 
 // Habilitar todas las rutas
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    credentials: true
+}));
+
+// Agrega estas dos líneas:
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Primera ruta
 app.get('/', (req, res) => {
     res.send('Bienvennido al curso de node express');
 });
-app.use("/api/producto", productosRoutes);
+app.use("/api/productos", productosRoutes);
 app.use("/api/usuario", usuarioRoutes);
 app.use("/api/login", loginusuario); 
 app.use("/api/perfil", obtenerPerfil);

@@ -35,7 +35,7 @@ export const actualizarProducto = async (req, res) => {
   try {
       const {id} = req.params;
       const {productId, nombre, descripcion, precio, image} = req.body;
-      const productoActualizado = await Productos .findByIdAndUpdate(id, {productId, nombre, descripcion, precio, image}, {new: true});
+      const productoActualizado = await productos .findByIdAndUpdate(id, {productId, nombre, descripcion, precio, image}, {new: true});
       if (!productoActualizado) {
           return res.status(404).json({message: "Producto no encontrado"});
       }
@@ -50,7 +50,7 @@ export const actualizarProducto = async (req, res) => {
 export const eliminarProducto = async (req, res) => {
   try {
       const {id} = req.params;  
-      const productoEliminado = await Productos.findByIdAndDelete(id);
+      const productoEliminado = await productos.findByIdAndDelete(id);
       if (!productoEliminado) {
           return res.status(404).json({message: "Producto no encontrado"});
       }

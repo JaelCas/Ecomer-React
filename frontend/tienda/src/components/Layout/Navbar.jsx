@@ -2,15 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import { ShoppingCart, User, Menu, X, LogOut, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 
 function Navbar() {
     const { usuario, logout } = useAuth();
-    const [cartCount, setCartCount] = useState(0);
+    const { cantidadTotal } = useCart();
     const [mobileMenuOpen, setMobilMenuOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    // Cierra el dropdown si se hace click fuera
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -67,16 +67,16 @@ function Navbar() {
                     <div className="flex items-center space-x-2">
 
                         {/* Carrito */}
-                        <a href="#" className="relative group p-2.5 hover:bg-blue-50 rounded-xl transition-all duration-300 transform hover:scale-105">
+                        <Link to="/carrito" className="relative group p-2.5 hover:bg-blue-50 rounded-xl transition-all duration-300 transform hover:scale-105">
                             <ShoppingCart className="w-6 h-6 text-gray-700 group-hover:text-blue-600 transition-all duration-300 group-hover:rotate-3" />
-                            {cartCount > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-linear-to-r from-red-500 via-pink-500 to-red-600 text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1 shadow-lg border-2 border-white animate-pulse">
-                                    {cartCount}
+                            {cantidadTotal > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1 shadow-lg border-2 border-white animate-pulse">
+                                    {cantidadTotal}
                                 </span>
                             )}
-                        </a>
+                        </Link>
 
-                        {/* Usuario: si está logueado muestra avatar + dropdown, si no muestra ícono de login */}
+                        {/* Usuario */}
                         {usuario ? (
                             <div className="relative" ref={dropdownRef}>
                                 <button
@@ -86,34 +86,22 @@ function Navbar() {
                                     <div className="w-9 h-9 rounded-full bg-linear-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow">
                                         {getIniciales(usuario.nombre)}
                                     </div>
-                                    <span className="hidden md:block text-sm font-medium text-gray-700 max-w-100px truncate">
-                                        {usuario.nombre}
-                                    </span>
-                                    <span className="hidden md:block text-sm font-medium text-gray-700 max-w-100px truncate">
-                                        {usuario.apellido}
-                                    </span>
+                                    <span className="hidden md:block text-sm font-medium text-gray-700 max-w-100px truncate">{usuario.nombre}</span>
+                                    <span className="hidden md:block text-sm font-medium text-gray-700 max-w-100px truncate">{usuario.apellido}</span>
                                     <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
                                 </button>
 
-                                {/* Dropdown */}
                                 {dropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
                                         <div className="px-4 py-2 border-b border-gray-100 mb-1">
                                             <p className="text-sm font-semibold text-gray-800 truncate">{usuario.nombre}</p>
                                             <p className="text-xs text-gray-500 truncate">{usuario.email}</p>
                                         </div>
-                                        <Link
-                                            to="/perfil"
-                                            onClick={() => setDropdownOpen(false)}
-                                            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150"
-                                        >
+                                        <Link to="/perfil" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150">
                                             <User className="w-4 h-4" />
                                             Mi Perfil
                                         </Link>
-                                        <button
-                                            onClick={() => { setDropdownOpen(false); logout(); }}
-                                            className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors duration-150"
-                                        >
+                                        <button onClick={() => { setDropdownOpen(false); logout(); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors duration-150">
                                             <LogOut className="w-4 h-4" />
                                             Cerrar sesión
                                         </button>
@@ -121,24 +109,14 @@ function Navbar() {
                                 )}
                             </div>
                         ) : (
-                            <Link
-                                to="/login"
-                                className="relative group p-2.5 hover:bg-blue-50 rounded-xl transition-all duration-300 transform hover:scale-105"
-                            >
+                            <Link to="/login" className="relative group p-2.5 hover:bg-blue-50 rounded-xl transition-all duration-300 transform hover:scale-105">
                                 <User className="w-6 h-6 text-gray-700 group-hover:text-blue-600 transition-all duration-300" />
                             </Link>
                         )}
 
                         {/* Botón menú móvil */}
-                        <button
-                            onClick={() => setMobilMenuOpen(!mobileMenuOpen)}
-                            className="md:hidden p-2.5 hover:bg-blue-50 rounded-xl transition-all duration-300"
-                        >
-                            {mobileMenuOpen ? (
-                                <X className="w-6 h-6 text-gray-700" />
-                            ) : (
-                                <Menu className="w-6 h-6 text-gray-700" />
-                            )}
+                        <button onClick={() => setMobilMenuOpen(!mobileMenuOpen)} className="md:hidden p-2.5 hover:bg-blue-50 rounded-xl transition-all duration-300">
+                            {mobileMenuOpen ? <X className="w-6 h-6 text-gray-700" /> : <Menu className="w-6 h-6 text-gray-700" />}
                         </button>
                     </div>
                 </div>
